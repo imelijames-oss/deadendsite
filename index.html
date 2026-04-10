@@ -464,7 +464,8 @@
       transition: transform 0.45s cubic-bezier(0.16,1,0.3,1);
       z-index: 0;
     }
-    .work-row:hover::before { transform: translateX(0); }
+    .work-row:hover::before,
+    .work-row.active::before { transform: translateX(0); }
     .work-row > * { position: relative; z-index: 1; }
     .work-row:last-child { border-bottom: 1px solid var(--line); }
 
@@ -478,7 +479,8 @@
       letter-spacing: 0.03em; color: var(--cream);
       transition: color 0.3s;
     }
-    .work-row:hover .w-name { color: var(--red); }
+    .work-row:hover .w-name,
+    .work-row.active .w-name { color: var(--red); }
     .w-type {
       font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
       color: rgba(240,235,224,0.32); text-align: right;
@@ -1210,7 +1212,7 @@
       </li>
       <li class="work-row rv d3">
         <span class="w-yr">2024</span>
-        <span class="w-name" data-text="CURRENT TRDNS">CURRENT TRDNS</span>
+        <span class="w-name" data-text="CURRENT TRNDS">CURRENT TRNDS</span>
         <span class="w-type">Brand · Web</span>
       </li>
       <li class="work-row rv d4">
@@ -1384,6 +1386,20 @@
       const orig = name.dataset.text;
       row.addEventListener('mouseenter', () => scramble(name, orig));
     });
+
+    /* ── MOBILE: scroll-triggered work row effect ───────────── */
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+      const workIo = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting && !e.target.classList.contains('active')) {
+            e.target.classList.add('active');
+            const name = e.target.querySelector('.w-name');
+            scramble(name, name.dataset.text);
+          }
+        });
+      }, { threshold: 0.4 });
+      document.querySelectorAll('.work-row').forEach(row => workIo.observe(row));
+    }
 
     /* ── STAT COUNTER ANIMATION ─────────────────────────────── */
     function countUp(el) {
