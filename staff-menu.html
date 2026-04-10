@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Packages — deadend creative</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; cursor: none; }
+    :root {
+      --black: #090909;
+      --dim:   #111111;
+      --line:  rgba(240,235,224,0.1);
+      --cream: #f0ebe0;
+      --muted: #555;
+      --red:   #ff2200;
+      --sand:  #c8b49a;
+    }
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: -50%;
+      width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      opacity: 0.038;
+      pointer-events: none; z-index: 9000;
+      animation: grain 0.6s steps(1) infinite;
+    }
+    @keyframes grain {
+      0%   { transform: translate(0,0); }
+      14%  { transform: translate(-3%,-5%); }
+      28%  { transform: translate(5%, 2%); }
+      42%  { transform: translate(-4%, 6%); }
+      57%  { transform: translate(7%,-3%); }
+      71%  { transform: translate(-1%, 8%); }
+      85%  { transform: translate(4%, 1%); }
+    }
+
+    #c-dot {
+      width: 7px; height: 7px;
+      background: var(--red); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    #c-ring {
+      width: 34px; height: 34px;
+      border: 1px solid rgba(240,235,224,0.6); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width 0.3s, height 0.3s, border-color 0.3s, border-width 0.3s;
+    }
+    #c-ring.active { width: 56px; height: 56px; border-color: var(--red); border-width: 1.5px; }
+
+    /* ─── NAV ─── */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 30px 52px;
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 0.18em;
+      color: var(--cream); text-decoration: none;
+    }
+    .nav-logo b { color: var(--red); font-weight: 400; }
+    .nav-links { list-style: none; display: flex; gap: 48px; }
+    .nav-links a {
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--cream); text-decoration: none;
+      opacity: 0.45; transition: opacity 0.25s;
+    }
+    .nav-links a:hover { opacity: 1; }
+
+    /* ─── HERO ─── */
+    .pkg-hero {
+      padding: 80px 52px 108px;
+      border-bottom: 1px solid var(--line);
+      position: relative; overflow: hidden;
+    }
+    .pkg-hero-ghost {
+      position: absolute;
+      top: 50%; right: -2%;
+      transform: translateY(-50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(160px, 22vw, 380px);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(240,235,224,0.025);
+      user-select: none; pointer-events: none;
+      line-height: 1;
+    }
+    .pkg-hero-tag {
+      font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 36px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .pkg-hero-tag::before {
+      content: ''; width: 36px; height: 1px; background: var(--red); display: block;
+    }
+    .pkg-hero-hed {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 12vw, 190px);
+      line-height: 0.86; letter-spacing: -0.015em;
+      position: relative; z-index: 1;
+    }
+    .pkg-hero-hed .out {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--cream);
+    }
+    .pkg-hero-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 19px; font-style: italic; font-weight: 300;
+      color: rgba(240,235,224,0.38); line-height: 1.6;
+      max-width: 500px; margin-top: 40px;
+      position: relative; z-index: 1;
+    }
+
+    /* ─── PACKAGES ─── */
+    .pkg-section { padding: 100px 52px 128px; }
+
+    .pkg-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 80px;
+      align-items: start;
+    }
+
+    .pkg-card {
+      background: var(--dim);
+      border: 1px solid var(--line);
+      padding: 40px 36px;
+      display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s;
+    }
+    .pkg-card:hover { border-color: rgba(255,34,0,0.22); }
+    .pkg-card.featured { border-color: rgba(255,34,0,0.28); }
+    .pkg-card.featured::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: var(--red);
+    }
+    .pkg-card-rl {
+      position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 1px; background: var(--red);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1); z-index: 2;
+    }
+    .pkg-card:hover .pkg-card-rl { transform: scaleX(1); }
+
+    .pkg-card-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 32px;
+    }
+    .pkg-num {
+      font-size: 10px; letter-spacing: 0.3em;
+      color: var(--red); opacity: 0.55;
+    }
+    .pkg-tier {
+      font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(240,235,224,0.28);
+      border: 1px solid var(--line);
+      padding: 5px 10px;
+    }
+    .pkg-card.featured .pkg-tier {
+      color: rgba(255,34,0,0.65);
+      border-color: rgba(255,34,0,0.22);
+    }
+
+    .pkg-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 3.2vw, 48px);
+      letter-spacing: 0.04em; line-height: 0.9;
+      color: var(--cream); margin-bottom: 18px;
+    }
+    .pkg-starting {
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .pkg-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 5.5vw, 80px);
+      letter-spacing: -0.02em; line-height: 0.9;
+      color: var(--cream); margin-bottom: 32px;
+    }
+    .pkg-card.featured .pkg-price { color: var(--red); }
+
+    .pkg-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; font-style: italic; font-weight: 300;
+      color: rgba(240,235,224,0.38); line-height: 1.55;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 28px;
+    }
+
+    .pkg-includes-label {
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 14px;
+    }
+    .pkg-includes {
+      list-style: none; flex: 1; margin-bottom: 36px;
+    }
+    .pkg-includes li {
+      font-size: 11px; line-height: 1.45;
+      color: rgba(240,235,224,0.5);
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(240,235,224,0.04);
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .pkg-includes li::before {
+      content: '—'; color: var(--red); opacity: 0.5; flex-shrink: 0;
+    }
+
+    .pkg-hosting {
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+    .pkg-hosting-label {
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .pkg-hosting-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px; letter-spacing: 0.03em; line-height: 1;
+      color: var(--cream);
+    }
+    .pkg-card.featured .pkg-hosting-price { color: var(--red); }
+    .pkg-hosting-note {
+      font-size: 10px; letter-spacing: 0.1em;
+      color: var(--muted); margin-top: 5px;
+    }
+
+    /* ─── INFO GRID ─── */
+    .pkg-info {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      padding-top: 64px;
+      border-top: 1px solid var(--line);
+    }
+    .pkg-info-label {
+      font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .pkg-info-label::before {
+      content: ''; width: 28px; height: 1px; background: var(--red); display: block; flex-shrink: 0;
+    }
+    .pkg-info-body {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; font-style: italic; font-weight: 300;
+      color: rgba(240,235,224,0.42); line-height: 1.65;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 36px 52px;
+      border-top: 1px solid var(--line);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .ft-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px; letter-spacing: 0.18em;
+      color: rgba(240,235,224,0.28);
+    }
+    .ft-logo b { color: var(--red); }
+    .ft-copy { font-size: 10px; letter-spacing: 0.14em; color: var(--muted); }
+    .ft-logout {
+      font-size: 10px; letter-spacing: 0.14em;
+      color: rgba(240,235,224,0.18); text-decoration: none;
+      background: none; border: none; font-family: 'Space Mono', monospace;
+      cursor: none; transition: color 0.2s;
+    }
+    .ft-logout:hover { color: rgba(240,235,224,0.45); }
+
+    /* ─── SCROLL REVEAL ─── */
+    .rv {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity 0.85s ease, transform 0.85s cubic-bezier(0.16,1,0.3,1);
+    }
+    .rv.on { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: 0.08s; }
+    .d2 { transition-delay: 0.16s; }
+    .d3 { transition-delay: 0.24s; }
+
+    /* ─── MOBILE ─── */
+    @media (hover: none) and (pointer: coarse) {
+      html { cursor: auto; }
+      #c-dot, #c-ring { display: none; }
+      .ft-logout { cursor: pointer; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 22px 24px; flex-wrap: wrap; gap: 16px; }
+      .nav-links { gap: 22px; }
+      .nav-links a { font-size: 10px; letter-spacing: 0.14em; }
+      .pkg-hero { padding: 56px 24px 72px; }
+      .pkg-section { padding: 64px 24px 80px; }
+      .pkg-grid { grid-template-columns: 1fr; }
+      .pkg-info { grid-template-columns: 1fr; gap: 44px; padding-top: 48px; }
+      footer { padding: 28px 24px; flex-direction: column; gap: 16px; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      nav { padding: 18px 20px; }
+      .pkg-hero { padding: 48px 20px 64px; }
+      .pkg-section { padding: 52px 20px 72px; }
+      .pkg-card { padding: 28px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="c-dot"></div>
+  <div id="c-ring"></div>
+
+  <nav>
+    <a href="index.html" class="nav-logo">dead<b>end</b></a>
+    <ul class="nav-links">
+      <li><a href="index.html#work">Work</a></li>
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#manifesto">Studio</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="pkg-hero">
+    <div class="pkg-hero-ghost">RATE</div>
+    <p class="pkg-hero-tag rv">Internal — Web Packages</p>
+    <h1 class="pkg-hero-hed rv d1">
+      WEB<br>
+      <span class="out">PACKAGES.</span>
+    </h1>
+    <p class="pkg-hero-sub rv d2">Fully custom-coded sites — no templates, no WordPress, no shortcuts. Every line written from scratch to convert.</p>
+  </div>
+
+  <!-- PACKAGES GRID -->
+  <section class="pkg-section">
+    <div class="pkg-grid">
+
+      <!-- 01: Foundation -->
+      <div class="pkg-card rv d1">
+        <div class="pkg-card-rl"></div>
+        <div class="pkg-card-top">
+          <span class="pkg-num">01</span>
+          <span class="pkg-tier">Launch Ready</span>
+        </div>
+        <div class="pkg-name">Foundation</div>
+        <p class="pkg-starting">Starting at</p>
+        <div class="pkg-price">$3,000</div>
+        <p class="pkg-desc">Everything you need to show up online with confidence. Clean, fast, built to convert.</p>
+        <p class="pkg-includes-label">Includes</p>
+        <ul class="pkg-includes">
+          <li>Up to 5 custom-coded pages</li>
+          <li>Mobile-first responsive design</li>
+          <li>Contact &amp; lead capture form</li>
+          <li>SEO foundation &amp; meta setup</li>
+          <li>Google Analytics integration</li>
+          <li>30-day post-launch support</li>
+          <li>1 revision round included</li>
+        </ul>
+        <div class="pkg-hosting">
+          <p class="pkg-hosting-label">Monthly Hosting</p>
+          <div class="pkg-hosting-price">$75 / mo</div>
+          <p class="pkg-hosting-note">Managed hosting + maintenance</p>
+        </div>
+      </div>
+
+      <!-- 02: Conversion (featured) -->
+      <div class="pkg-card featured rv d2">
+        <div class="pkg-card-rl"></div>
+        <div class="pkg-card-top">
+          <span class="pkg-num">02</span>
+          <span class="pkg-tier">Most Popular</span>
+        </div>
+        <div class="pkg-name">Conversion</div>
+        <p class="pkg-starting">Starting at</p>
+        <div class="pkg-price">$4,750</div>
+        <p class="pkg-desc">For brands ready to scale. Refined UX and the kind of polish that earns trust on arrival.</p>
+        <p class="pkg-includes-label">Includes</p>
+        <ul class="pkg-includes">
+          <li>Up to 10 custom-coded pages</li>
+          <li>Advanced animations &amp; transitions</li>
+          <li>CRM / email platform integration</li>
+          <li>Performance &amp; Core Web Vitals audit</li>
+          <li>Custom blog or content system</li>
+          <li>60-day priority support</li>
+          <li>2 revision rounds included</li>
+        </ul>
+        <div class="pkg-hosting">
+          <p class="pkg-hosting-label">Monthly Hosting</p>
+          <div class="pkg-hosting-price">$120 / mo</div>
+          <p class="pkg-hosting-note">Managed hosting + priority support</p>
+        </div>
+      </div>
+
+      <!-- 03: Full System -->
+      <div class="pkg-card rv d3">
+        <div class="pkg-card-rl"></div>
+        <div class="pkg-card-top">
+          <span class="pkg-num">03</span>
+          <span class="pkg-tier">Full Stack</span>
+        </div>
+        <div class="pkg-name">Full System</div>
+        <p class="pkg-starting">Starting at</p>
+        <div class="pkg-price">$6,500</div>
+        <p class="pkg-desc">The complete picture. Custom development, full brand integration, built to grow with you.</p>
+        <p class="pkg-includes-label">Includes</p>
+        <ul class="pkg-includes">
+          <li>Unlimited custom-coded pages</li>
+          <li>Full brand identity integration</li>
+          <li>E-commerce or booking system</li>
+          <li>Custom dashboard / client portal</li>
+          <li>Advanced SEO &amp; content strategy</li>
+          <li>90-day dedicated support</li>
+          <li>Unlimited revision rounds</li>
+        </ul>
+        <div class="pkg-hosting">
+          <p class="pkg-hosting-label">Monthly Hosting</p>
+          <div class="pkg-hosting-price">$175 / mo</div>
+          <p class="pkg-hosting-note">Hosting + ongoing dev retainer</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Info row -->
+    <div class="pkg-info">
+      <div class="rv">
+        <p class="pkg-info-label">Custom Scoping</p>
+        <p class="pkg-info-body">Final pricing confirmed after a discovery call. Every project is scoped to your real needs.</p>
+      </div>
+      <div class="rv d1">
+        <p class="pkg-info-label">Payment Terms</p>
+        <p class="pkg-info-body">50% deposit to kick off. Remaining 50% due at launch. Hosting billed monthly post go-live.</p>
+      </div>
+      <div class="rv d2">
+        <p class="pkg-info-label">Not Included</p>
+        <p class="pkg-info-body">Domain registration, third-party licenses, and paid plugins billed separately at cost.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="ft-logo">dead<b>end</b> creative</div>
+    <p class="ft-copy">© 2025 Deadend Creative. All rights reserved.</p>
+    <button class="ft-logout" id="logoutBtn">Sign out</button>
+  </footer>
+
+  <script>
+    /* Auth guard */
+    if (!sessionStorage.getItem('staff_auth')) {
+      window.location.href = 'staff-login.html';
+    }
+
+    /* Cursor */
+    const dot  = document.getElementById('c-dot');
+    const ring = document.getElementById('c-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    (function loop() {
+      rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('active'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('active'));
+    });
+
+    /* Scroll reveal */
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -48px 0px' });
+    document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+    /* Logout */
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('staff_auth');
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

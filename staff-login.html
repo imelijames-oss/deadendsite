@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff Access — deadend creative</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; cursor: none; }
+    :root {
+      --black: #090909;
+      --dim:   #111111;
+      --line:  rgba(240,235,224,0.1);
+      --cream: #f0ebe0;
+      --muted: #555;
+      --red:   #ff2200;
+    }
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Space Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      overflow-x: hidden;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: -50%;
+      width: 200%; height: 200%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      opacity: 0.038;
+      pointer-events: none; z-index: 9000;
+      animation: grain 0.6s steps(1) infinite;
+    }
+    @keyframes grain {
+      0%   { transform: translate(0,0); }
+      14%  { transform: translate(-3%,-5%); }
+      28%  { transform: translate(5%, 2%); }
+      42%  { transform: translate(-4%, 6%); }
+      57%  { transform: translate(7%,-3%); }
+      71%  { transform: translate(-1%, 8%); }
+      85%  { transform: translate(4%, 1%); }
+    }
+
+    #c-dot {
+      width: 7px; height: 7px;
+      background: var(--red); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    #c-ring {
+      width: 34px; height: 34px;
+      border: 1px solid rgba(240,235,224,0.6); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width 0.3s, height 0.3s, border-color 0.3s, border-width 0.3s;
+    }
+    #c-ring.active { width: 56px; height: 56px; border-color: var(--red); border-width: 1.5px; }
+
+    /* Red vertical accent */
+    .login-accent {
+      position: fixed;
+      top: 10%; left: 40px;
+      width: 2px; height: 80px;
+      background: var(--red);
+      opacity: 0.5;
+    }
+
+    .login-wrap {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 0.18em;
+      color: var(--cream); text-decoration: none;
+      display: block; margin-bottom: 56px;
+    }
+    .login-logo b { color: var(--red); font-weight: 400; }
+
+    .login-label {
+      font-size: 10px; letter-spacing: 0.34em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 28px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .login-label::before {
+      content: ''; width: 36px; height: 1px; background: var(--red); display: block;
+    }
+
+    .login-hed {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 72px; letter-spacing: 0.02em; line-height: 0.88;
+      color: var(--cream); margin-bottom: 52px;
+    }
+
+    .form-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .form-field label {
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(240,235,224,0.35);
+    }
+    .form-field input {
+      background: rgba(240,235,224,0.035);
+      border: 1px solid var(--line);
+      color: var(--cream);
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.25s, background 0.25s;
+      border-radius: 0; width: 100%;
+    }
+    .form-field input::placeholder { color: rgba(240,235,224,0.2); }
+    .form-field input:focus {
+      border-color: var(--red);
+      background: rgba(255,34,0,0.04);
+    }
+
+    .login-btn {
+      margin-top: 28px; width: 100%;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--black); background: var(--red);
+      border: none; padding: 18px;
+      cursor: none; position: relative; overflow: hidden;
+      transition: color 0.3s;
+    }
+    .login-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--cream);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+    }
+    .login-btn:hover::before { transform: scaleX(1); }
+    .login-btn span { position: relative; z-index: 1; }
+
+    .login-error {
+      font-size: 10px; letter-spacing: 0.14em;
+      color: var(--red); margin-top: 16px;
+      text-align: center;
+      opacity: 0; transition: opacity 0.3s;
+      min-height: 16px;
+    }
+    .login-error.show { opacity: 1; }
+
+    .back-link {
+      display: block; margin-top: 48px;
+      font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(240,235,224,0.18); text-decoration: none; text-align: center;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: rgba(240,235,224,0.45); }
+
+    @media (hover: none) and (pointer: coarse) {
+      html { cursor: auto; }
+      #c-dot, #c-ring { display: none; }
+      .login-btn { cursor: pointer; }
+      .login-accent { display: none; }
+    }
+    @media (max-width: 480px) {
+      .login-hed { font-size: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="c-dot"></div>
+  <div id="c-ring"></div>
+  <div class="login-accent"></div>
+
+  <div class="login-wrap">
+    <a href="index.html" class="login-logo">dead<b>end</b></a>
+    <p class="login-label">Staff access</p>
+    <h1 class="login-hed">SIGN<br>IN.</h1>
+
+    <form id="loginForm" novalidate>
+      <div class="form-field">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="username" autocomplete="username" />
+      </div>
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" />
+      </div>
+      <button type="submit" class="login-btn"><span>Access portal</span></button>
+      <p class="login-error" id="loginError">Invalid credentials — try again.</p>
+    </form>
+
+    <a href="index.html" class="back-link">← Back to site</a>
+  </div>
+
+  <script>
+    /* Cursor */
+    const dot  = document.getElementById('c-dot');
+    const ring = document.getElementById('c-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    (function loop() {
+      rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a, button, input').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('active'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('active'));
+    });
+
+    /* Login */
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      if (u === 'eli' && p === 'test') {
+        sessionStorage.setItem('staff_auth', 'true');
+        window.location.href = 'staff-menu.html';
+      } else {
+        const err = document.getElementById('loginError');
+        err.classList.add('show');
+        setTimeout(() => err.classList.remove('show'), 3000);
+      }
+    });
+  </script>
+</body>
+</html>
