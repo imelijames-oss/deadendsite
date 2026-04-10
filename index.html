@@ -868,8 +868,13 @@
       .nav-links a { font-size: 10px; letter-spacing: 0.14em; }
 
       /* HERO */
-      #hero { padding: 0 24px 72px; }
-      .hero-accent { left: 24px; }
+      #hero {
+        padding: 56px 24px 80px;
+        min-height: auto;
+        justify-content: flex-start;
+      }
+      .hero-accent { left: 24px; top: 56px; }
+      .hero-tag { margin-bottom: 24px; }
       .hero-sub {
         position: static;
         text-align: left;
@@ -877,7 +882,7 @@
         margin-top: 28px;
       }
       .hero-sub p { font-size: 16px; }
-      .hero-scroll { left: 24px; transform: none; }
+      .hero-scroll { display: none; }
 
       /* SECTION LABELS */
       .sec-label { margin-bottom: 44px; }
@@ -954,8 +959,8 @@
       .nav-links a { font-size: 9px; letter-spacing: 0.1em; }
 
       /* HERO */
-      #hero { padding: 0 20px 64px; }
-      .hero-accent { left: 20px; }
+      #hero { padding: 48px 20px 72px; }
+      .hero-accent { left: 20px; top: 48px; }
       .hero-sub p { font-size: 15px; }
 
       /* SERVICES */
