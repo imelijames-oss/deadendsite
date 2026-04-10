@@ -220,22 +220,15 @@
     });
 
     /* Login */
-    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    const USERS = { eli: 'test', ethan: 'ethansux' };
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const btn = this.querySelector('.login-btn span');
-      btn.textContent = 'Verifying...';
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: document.getElementById('username').value.trim(),
-          password: document.getElementById('password').value
-        })
-      });
-      if (res.ok) {
+      const u = document.getElementById('username').value.trim().toLowerCase();
+      const p = document.getElementById('password').value;
+      if (USERS[u] && USERS[u] === p) {
+        sessionStorage.setItem('staff_auth', 'true');
         window.location.href = 'staff-menu.html';
       } else {
-        btn.textContent = 'Access portal';
         const err = document.getElementById('loginError');
         err.classList.add('show');
         setTimeout(() => err.classList.remove('show'), 3000);

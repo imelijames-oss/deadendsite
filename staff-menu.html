@@ -460,9 +460,9 @@
 
   <script>
     /* Auth guard */
-    fetch('/api/check').then(r => {
-      if (!r.ok) window.location.href = 'staff-login.html';
-    });
+    if (!sessionStorage.getItem('staff_auth')) {
+      window.location.href = 'staff-login.html';
+    }
 
     /* Cursor */
     const dot  = document.getElementById('c-dot');
@@ -489,8 +489,8 @@
     document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
     /* Logout */
-    document.getElementById('logoutBtn').addEventListener('click', async () => {
-      await fetch('/api/logout', { method: 'POST' });
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      sessionStorage.removeItem('staff_auth');
       window.location.href = 'index.html';
     });
   </script>
