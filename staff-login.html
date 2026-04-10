@@ -220,14 +220,22 @@
     });
 
     /* Login */
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value;
-      if (u === 'eli' && p === 'test') {
-        sessionStorage.setItem('staff_auth', 'true');
+      const btn = this.querySelector('.login-btn span');
+      btn.textContent = 'Verifying...';
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('username').value.trim(),
+          password: document.getElementById('password').value
+        })
+      });
+      if (res.ok) {
         window.location.href = 'staff-menu.html';
       } else {
+        btn.textContent = 'Access portal';
         const err = document.getElementById('loginError');
         err.classList.add('show');
         setTimeout(() => err.classList.remove('show'), 3000);

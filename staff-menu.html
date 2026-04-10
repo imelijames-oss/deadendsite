@@ -372,7 +372,7 @@
         </ul>
         <div class="pkg-hosting">
           <p class="pkg-hosting-label">Monthly Hosting</p>
-          <div class="pkg-hosting-price">$75 / mo</div>
+          <div class="pkg-hosting-price">$150 / mo</div>
           <p class="pkg-hosting-note">Managed hosting + maintenance</p>
         </div>
       </div>
@@ -400,7 +400,7 @@
         </ul>
         <div class="pkg-hosting">
           <p class="pkg-hosting-label">Monthly Hosting</p>
-          <div class="pkg-hosting-price">$120 / mo</div>
+          <div class="pkg-hosting-price">$200 / mo</div>
           <p class="pkg-hosting-note">Managed hosting + priority support</p>
         </div>
       </div>
@@ -428,7 +428,7 @@
         </ul>
         <div class="pkg-hosting">
           <p class="pkg-hosting-label">Monthly Hosting</p>
-          <div class="pkg-hosting-price">$175 / mo</div>
+          <div class="pkg-hosting-price">$250 / mo</div>
           <p class="pkg-hosting-note">Hosting + ongoing dev retainer</p>
         </div>
       </div>
@@ -460,9 +460,9 @@
 
   <script>
     /* Auth guard */
-    if (!sessionStorage.getItem('staff_auth')) {
-      window.location.href = 'staff-login.html';
-    }
+    fetch('/api/check').then(r => {
+      if (!r.ok) window.location.href = 'staff-login.html';
+    });
 
     /* Cursor */
     const dot  = document.getElementById('c-dot');
@@ -489,8 +489,8 @@
     document.querySelectorAll('.rv').forEach(el => io.observe(el));
 
     /* Logout */
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-      sessionStorage.removeItem('staff_auth');
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await fetch('/api/logout', { method: 'POST' });
       window.location.href = 'index.html';
     });
   </script>
