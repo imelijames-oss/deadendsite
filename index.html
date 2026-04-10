@@ -15,6 +15,7 @@
   <meta name="twitter:title"      content="DEADEND" />
   <meta name="twitter:description" content="We design at the edge of ordinary — where constraints become the canvas, and the work becomes everything." />
   <meta name="twitter:image"      content="og-image.png" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
@@ -1482,15 +1483,61 @@
       el.addEventListener('mouseleave', () => ring.classList.remove('active'));
     });
 
-    /* Form submission placeholder */
+    /* Zoho CRM Web-to-Lead submission */
     document.getElementById('inquiryForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const btn = this.querySelector('.form-submit span');
-      btn.textContent = 'Sent — we\'ll be in touch.';
-      this.querySelector('.form-submit').style.background = 'transparent';
-      this.querySelector('.form-submit').style.border = '1px solid var(--red)';
-      this.querySelector('.form-submit').style.color = 'var(--cream)';
-      setTimeout(closeModal, 2200);
+      var form = this;
+      var btn = form.querySelector('.form-submit span');
+      var btnEl = form.querySelector('.form-submit');
+      btn.textContent = 'Sending...';
+      btnEl.disabled = true;
+
+      var formData = new FormData();
+      formData.append('xnQsjsdp', 'b8e6f9d7231bb58ad8aa302ee3c56d05378532c4e6325fbabdf1ff00bc443cbd');
+      formData.append('xmIwtLD', '1ec8b4a2c694a101ba63a96603f9979069cfc1756f4aaf8c5b070c746f3e9c58b10b8f07fba8fb5d437f48a11d5c9bb9');
+      formData.append('actionType', 'TGVhZHM=');
+      formData.append('returnURL', 'null');
+      formData.append('aG9uZXlwb3Q', '');
+      formData.append('zc_gad', '');
+      formData.append('First Name', form.first_name.value);
+      formData.append('Last Name', form.last_name.value);
+      formData.append('Company', form.company.value);
+      formData.append('Website', form.website.value);
+      formData.append('Industry', form.industry.value);
+      formData.append('Phone', form.phone.value);
+      formData.append('Email', form.email.value);
+      formData.append('Description', 'Budget: ' + form.budget.value);
+
+      $.ajax({
+        url: 'https://crm.zoho.com/crm/WebToLeadForm',
+        type: 'POST',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function() {
+          btn.textContent = 'Sent — we\'ll be in touch.';
+          btnEl.style.background = 'transparent';
+          btnEl.style.border = '1px solid var(--red)';
+          btnEl.style.color = 'var(--cream)';
+          setTimeout(closeModal, 2200);
+          setTimeout(function() {
+            form.reset();
+            btn.textContent = 'Submit inquiry';
+            btnEl.style.background = '';
+            btnEl.style.border = '';
+            btnEl.style.color = '';
+            btnEl.disabled = false;
+          }, 2800);
+        },
+        error: function() {
+          btn.textContent = 'Something went wrong — try again.';
+          btnEl.style.background = 'transparent';
+          btnEl.style.border = '1px solid var(--red)';
+          btnEl.disabled = false;
+          setTimeout(function() { btn.textContent = 'Submit inquiry'; }, 3000);
+        }
+      });
     });
     }); // end DOMContentLoaded
   </script>
